@@ -1,4 +1,3 @@
-{Profile Nur rohim }
 Technology :
 - Node js
 - Jquery

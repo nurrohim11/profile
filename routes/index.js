@@ -1,17 +1,30 @@
 var express = require('express');
-const pool = require('../config/db');
 const MainController = require('../controllers/MainController');
 const MessageController = require('../controllers/MessageController');
 const PortofolioController = require('../controllers/PortofolioController');
 const SkillController = require('../controllers/SkillController');
 const { uploadSkill, uploadProfile, uploadPortofolio } = require('../middlewares/multer');
+const auth = require('../middlewares/auth')
+
 var router = express.Router();
 
-/* GET home page. */
 router.get('/', function (req, res) {
-  res.redirect('/main')
+  console.log(req.session.user)
+  if(req.session.islogin != undefined && req.session.islogin === true){
+    res.redirect('/main')
+  }
+  else{
+    res.redirect('/login')
+  }
 })
+// login
+router.get('/login',MainController.login)
+router.get('/login/authentication',MainController.authentication)
+router.use(auth)
+
+// main
 router.get('/main',MainController.dashboard)
+router.get('/login/logout',MainController.logout)
 
 // module contact
 router.get('/main/contact',MainController.contact)

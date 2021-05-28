@@ -1,13 +1,84 @@
 const pool = require("../config/db")
+const { encrypt, decrypt } = require("../helpers/crypto")
 
 module.exports ={
 
+  login:async(req, res)=>{
+    try {
+      if( req.session.user != undefined && req.session.user.islogin == true){
+        res.redirect('/main')
+      }
+      else{
+        res.render('login/login')
+      }
+    }catch(err){
+      console.log(err)
+      res.render('login/login')
+    }
+  },
+
+  authentication:async(req, res)=>{
+
+    let status = false
+    let message = ''
+
+    try {
+      const { username, password } = req.query
+      await pool.query(
+        "SELECT * FROM tb_user a where a.username = $1",[username]
+        )
+        .then(async(res)=>{
+          if(res.rowCount > 0){
+            const data = {iv: res.rows[0].key,content: res.rows[0].password}
+            const pwd = decrypt(data)
+            if(pwd == password){
+
+              req.session.user = {
+                id: res.rows[0].id,
+                username:res.rows[0].username,
+                nama:res.rows[0].nama,
+                islogin:true
+              }
+
+              status = true
+              message = "Login berhasil"
+            }
+            else{
+              message = "Password yang anda masukkan salah"
+            }
+          }
+          else{
+            message = "User tidak ditemukan di dalam database"
+          }
+        })
+        .catch(err=>{
+          console.log(err)
+          message = "Terjadi kesalahan data"
+        })
+    }catch(err){
+      message = "Terjadi kesalahan data"
+    }
+
+    res.json({
+      status: status,
+      message: message
+    })
+
+  },
+
+  logout:(req, res)=>{
+    req.session.destroy()
+    res.redirect('/')
+  },
+
   dashboard:async(req, res)=>{
     try {
+      console.log(req.session.user.nama)
       res.render('main/dashboard',{
         url:req.originalUrl
       })
     }catch(err){
+      console.log(err)
       res.render('main/dashboard')
     }
   },

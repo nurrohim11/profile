@@ -30,6 +30,7 @@ module.exports ={
         .then(async(res)=>{
           if(res.rowCount > 0){
             const data = {iv: res.rows[0].key,content: res.rows[0].password}
+            console.log(decrypt(data))
             const pwd = decrypt(data)
             if(pwd == password){
 

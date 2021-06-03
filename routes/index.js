@@ -4,7 +4,8 @@ const MessageController = require('../controllers/MessageController');
 const PortofolioController = require('../controllers/PortofolioController');
 const SkillController = require('../controllers/SkillController');
 const { uploadSkill, uploadProfile, uploadPortofolio } = require('../middlewares/multer');
-const auth = require('../middlewares/auth')
+const auth = require('../middlewares/auth');
+const EducationController = require('../controllers/EducationController');
 
 var router = express.Router();
 
@@ -20,7 +21,7 @@ router.get('/', function (req, res) {
 // login
 router.get('/login',MainController.login)
 router.get('/login/authentication',MainController.authentication)
-router.use(auth)
+// router.use(auth)
 
 // main
 router.get('/main',MainController.dashboard)
@@ -51,5 +52,12 @@ router.post('/skill/idSkill',SkillController.idSkill)
 // module message
 router.get('/message',MessageController.message)
 router.get('/message/data_message',MessageController.dataMessage)
+
+// module education
+router.get('/education',EducationController.education)
+router.get('/education/data_education',EducationController.dataEducation)
+router.post('/education/process_education', EducationController.processEducation)
+router.post('/education/delete_education',EducationController.deleteEducation)
+router.post('/education/id_education',EducationController.id_education)
 
 module.exports = router;
